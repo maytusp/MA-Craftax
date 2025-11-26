@@ -1,0 +1,23 @@
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_setup.py:_flush():80] Current SDK version is 0.23.0
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_setup.py:_flush():80] Configure stats pid to 2054619
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_setup.py:_flush():80] Loading settings from /home/maytus/.config/wandb/settings
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_setup.py:_flush():80] Loading settings from /home/maytus/MA-Craftax-Ox/wandb/settings
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_init.py:setup_run_log_directory():713] Logging user logs to /home/maytus/MA-Craftax-Ox/wandb/run-20251126_110258-nzb991u6/logs/debug.log
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_init.py:setup_run_log_directory():714] Logging internal logs to /home/maytus/MA-Craftax-Ox/wandb/run-20251126_110258-nzb991u6/logs/debug-internal.log
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_init.py:init():840] calling init triggers
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_init.py:init():845] wandb.init called with sweep_config: {}
+config: {'WANDB_MODE': 'online', 'ENTITY': 'maytusp', 'PROJECT': 'RMT_MARL', 'RUN_NAME': 'IPPO - RMT', 'ENV_NAME': 'Craftax-Coop-Symbolic', 'ALG_NAME': 'ippo-rmt', 'D_MODEL': 128, 'N_LAYERS': 2, 'N_HEADS': 4, 'MLP_RATIO': 4, 'ACTIVATION': 'gelu', 'TOTAL_TIMESTEPS': 1000000000, 'NUM_ENVS': 1024, 'NUM_STEPS': 64, 'NUM_MINIBATCHES': 8, 'UPDATE_EPOCHS': 4, 'GAE_LAMBDA': 0.8, 'GAMMA': 0.99, 'CLIP_EPS': 0.2, 'SCALE_CLIP_EPS': False, 'ENT_COEF': 0.01, 'VF_COEF': 0.5, 'ANNEAL_LR': True, 'LR': '2e-4', 'MAX_GRAD_NORM': 1.0, 'LR_WARMUP': 0.0, 'REW_SHAPING_HORIZON': 1000000, 'NUM_SEEDS': 1, 'SEED': 0, '_wandb': {}}
+2025-11-26 11:02:58,013 INFO    MainThread:2054619 [wandb_init.py:init():888] starting backend
+2025-11-26 11:02:58,230 INFO    MainThread:2054619 [wandb_init.py:init():891] sending inform_init request
+2025-11-26 11:02:58,233 INFO    MainThread:2054619 [wandb_init.py:init():899] backend started and connected
+2025-11-26 11:02:58,234 INFO    MainThread:2054619 [wandb_init.py:init():969] updated telemetry
+2025-11-26 11:02:58,237 INFO    MainThread:2054619 [wandb_init.py:init():993] communicating run to backend with 90.0 second timeout
+2025-11-26 11:02:58,915 INFO    MainThread:2054619 [wandb_init.py:init():1040] starting run threads in backend
+2025-11-26 11:02:59,018 INFO    MainThread:2054619 [wandb_run.py:_console_start():2504] atexit reg
+2025-11-26 11:02:59,018 INFO    MainThread:2054619 [wandb_run.py:_redirect():2352] redirect: wrap_raw
+2025-11-26 11:02:59,018 INFO    MainThread:2054619 [wandb_run.py:_redirect():2421] Wrapping output streams.
+2025-11-26 11:02:59,018 INFO    MainThread:2054619 [wandb_run.py:_redirect():2444] Redirects installed.
+2025-11-26 11:02:59,019 INFO    MainThread:2054619 [wandb_init.py:init():1080] run started, returning control to user process
+2025-11-26 11:04:56,143 INFO    wandb-AsyncioManager-main:2054619 [service_client.py:_forward_responses():80] Reached EOF.
+2025-11-26 11:04:56,143 INFO    wandb-AsyncioManager-main:2054619 [mailbox.py:close():137] Closing mailbox, abandoning 1 handles.

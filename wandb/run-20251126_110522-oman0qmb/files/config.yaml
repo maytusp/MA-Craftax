@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            kaejia6rqpo84uwmdut67goskvtn7242:
+                args:
+                    - --config_file
+                    - ippo_rnn.yaml
+                cpu_count: 10
+                cpu_count_logical: 20
+                cudaVersion: "12.6"
+                disk:
+                    /:
+                        total: "980799373312"
+                        used: "808810303488"
+                email: maytusp@gmail.com
+                executable: /home/maytus/miniconda3/envs/robot/bin/python
+                git:
+                    commit: e1d94376eb1354342d3066849b7e045838419a50
+                    remote: https://github.com/maytusp/MA-Craftax.git
+                gpu: NVIDIA GeForce RTX 4090
+                gpu_count: 2
+                gpu_nvidia:
+                    - architecture: Ada
+                      cudaCores: 16384
+                      memoryTotal: "25757220864"
+                      name: NVIDIA GeForce RTX 4090
+                      uuid: GPU-d26d8b31-1893-c829-8b57-b785c43f20b8
+                    - architecture: Ada
+                      cudaCores: 16384
+                      memoryTotal: "25757220864"
+                      name: NVIDIA GeForce RTX 4090
+                      uuid: GPU-96a6f5a9-90cc-baac-d7ca-8db5eab739db
+                host: mingfei-workstation-92
+                memory:
+                    total: "66909839360"
+                os: Linux-6.8.0-85-generic-x86_64-with-glibc2.35
+                program: -m baselines.ippo_rnn
+                python: CPython 3.10.14
+                root: /home/maytus/MA-Craftax-Ox
+                startedAt: "2025-11-26T11:05:22.329897Z"
+                writerId: kaejia6rqpo84uwmdut67goskvtn7242
+        m: []
+        python_version: 3.10.14
+        t:
+            "1":
+                - 12
+                - 45
+                - 105
+            "2":
+                - 12
+                - 45
+                - 105
+            "3":
+                - 13
+                - 15
+                - 16
+            "4": 3.10.14
+            "5": 0.23.0
+            "12": 0.23.0
+            "13": linux-x86_64
+ACTIVATION:
+    value: tanh
+ALG_NAME:
+    value: ippo-rnn
+ANNEAL_LR:
+    value: true
+CLIP_EPS:
+    value: 0.2
+ENT_COEF:
+    value: 0.01
+ENTITY:
+    value: maytusp
+ENV_NAME:
+    value: Craftax-Coop-Symbolic
+FC_DIM_SIZE:
+    value: 128
+GAE_LAMBDA:
+    value: 0.8
+GAMMA:
+    value: 0.99
+GRU_HIDDEN_DIM:
+    value: 512
+LR:
+    value: "2e-4"
+LR_WARMUP:
+    value: 0
+MAX_GRAD_NORM:
+    value: 1
+NUM_ENVS:
+    value: 1024
+NUM_MINIBATCHES:
+    value: 8
+NUM_SEEDS:
+    value: 1
+NUM_STEPS:
+    value: 64
+PROJECT:
+    value: IPPO - RMT
+REW_SHAPING_HORIZON:
+    value: 1000000
+RUN_NAME:
+    value: IPPO - RNN
+SCALE_CLIP_EPS:
+    value: false
+SEED:
+    value: 0
+TOTAL_TIMESTEPS:
+    value: 1000000000
+UPDATE_EPOCHS:
+    value: 4
+VF_COEF:
+    value: 0.5
+WANDB_MODE:
+    value: online

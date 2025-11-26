@@ -1,0 +1,38 @@
+jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 563, in <module>
+    main()
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 559, in main
+    single_run(config)
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 548, in single_run
+    outs = jax.block_until_ready(train_vjit(rngs))
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 516, in train
+    runner_state, metric = jax.lax.scan(
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 456, in _update_step
+    update_state, loss_info = jax.lax.scan(
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 435, in _update_epoch
+    train_state, total_loss = jax.lax.scan(
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 393, in _update_minbatch
+    train_state = train_state.apply_gradients(grads=grads)
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/flax/training/train_state.py", line 103, in apply_gradients
+    updates, new_opt_state = self.tx.update(
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/optax/_src/combine.py", line 59, in update_fn
+    updates, new_s = fn(updates, s, params, **extra_args)
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/optax/_src/combine.py", line 59, in update_fn
+    updates, new_s = fn(updates, s, params, **extra_args)
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/optax/_src/base.py", line 311, in update
+    return tx.update(updates, state, params)
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/optax/_src/transform.py", line 805, in update_fn
+    step_size = step_size_fn(state.count)
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/optax/_src/alias.py", line 38, in <lambda>
+    return transform.scale_by_schedule(lambda count: m * learning_rate(count))
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 217, in linear_schedule
+    return config["LR"] * frac
+TypeError: Only integer scalar arrays can be converted to a scalar index.

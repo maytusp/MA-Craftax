@@ -1,0 +1,49 @@
+{
+  "os": "Linux-6.8.0-85-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.10.14",
+  "startedAt": "2025-11-26T11:05:22.329897Z",
+  "args": [
+    "--config_file",
+    "ippo_rnn.yaml"
+  ],
+  "program": "-m baselines.ippo_rnn",
+  "git": {
+    "remote": "https://github.com/maytusp/MA-Craftax.git",
+    "commit": "e1d94376eb1354342d3066849b7e045838419a50"
+  },
+  "email": "maytusp@gmail.com",
+  "root": "/home/maytus/MA-Craftax-Ox",
+  "host": "mingfei-workstation-92",
+  "executable": "/home/maytus/miniconda3/envs/robot/bin/python",
+  "cpu_count": 10,
+  "cpu_count_logical": 20,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_count": 2,
+  "disk": {
+    "/": {
+      "total": "980799373312",
+      "used": "808810303488"
+    }
+  },
+  "memory": {
+    "total": "66909839360"
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce RTX 4090",
+      "memoryTotal": "25757220864",
+      "cudaCores": 16384,
+      "architecture": "Ada",
+      "uuid": "GPU-d26d8b31-1893-c829-8b57-b785c43f20b8"
+    },
+    {
+      "name": "NVIDIA GeForce RTX 4090",
+      "memoryTotal": "25757220864",
+      "cudaCores": 16384,
+      "architecture": "Ada",
+      "uuid": "GPU-96a6f5a9-90cc-baac-d7ca-8db5eab739db"
+    }
+  ],
+  "cudaVersion": "12.6",
+  "writerId": "kaejia6rqpo84uwmdut67goskvtn7242"
+}

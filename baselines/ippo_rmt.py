@@ -1,4 +1,4 @@
-# python -m baselines.ippo_rnn --config_file ippo_rnn.yaml
+# python -m baselines.ippo_rmt --config_file ippo_rmt.yaml
 """
 Code is adapted from the IPPO RNN implementation of JaxMARL (https://github.com/FLAIROx/JaxMARL/tree/main) 
 Credit goes to the original authors: Rutherford et al.
@@ -36,7 +36,46 @@ from craftax.craftax_env import make_craftax_env_from_name
 # ===========================
 # Model Definitions
 # ===========================
-class ScannedRNN(nn.Module):
+
+class TransformerBlock(nn.Module):
+    """
+    Standard Transformer Encoder Block (Pre-Norm).
+    """
+    d_model: int
+    n_heads: int
+    mlp_ratio: float = 4.0
+
+    @nn.compact
+    def __call__(self, x):
+        # x shape: [Batch, Seq_Len, D_Model]
+        
+        # 1. Self-Attention
+        h = nn.LayerNorm()(x)
+        # Note: deterministic=True because we handle randomness in the wrapper if needed, 
+        # usually Dropout is turned off for standard PPO inference/training stability unless specified.
+        attn = nn.MultiHeadDotProductAttention(
+            num_heads=self.n_heads, 
+            kernel_init=orthogonal(1.0)
+        )(h, h)
+        x = x + attn
+
+        # 2. MLP
+        h = nn.LayerNorm()(x)
+        mlp_width = int(self.d_model * self.mlp_ratio)
+        h = nn.Dense(mlp_width, kernel_init=orthogonal(np.sqrt(2)), bias_init=constant(0.0))(h)
+        h = nn.gelu(h)
+        h = nn.Dense(self.d_model, kernel_init=orthogonal(np.sqrt(2)), bias_init=constant(0.0))(h)
+        x = x + h
+        
+        return x
+
+class ScannedRMT(nn.Module):
+    """
+    JAX implementation of Recurrent Memory Transformer (RMT)
+    wrapped in a scan for temporal rollout.
+    """
+    config: dict
+
     @functools.partial(
         nn.scan,
         variable_broadcast="params",
@@ -45,40 +84,73 @@ class ScannedRNN(nn.Module):
         split_rngs={"params": False},
     )
     @nn.compact
-    def __call__(self, carry, x):
-        rnn_state = carry
-        ins, resets = x
-        rnn_state = jnp.where(
-            resets[:, np.newaxis],
-            self.initialize_carry(*rnn_state.shape),
-            rnn_state,
+    def __call__(self, memory, x):
+        """
+        memory: [Batch, D_Model] (The hidden state)
+        x: (obs_embedding [Batch, D_Model], dones [Batch])
+        """
+        obs_emb, dones = x
+        
+        # 1. Memory Reset Logic (if done, reset memory to zero/init)
+        # This matches the logic in your ScannedRNN example
+        memory = jnp.where(
+            dones[:, np.newaxis],
+            jnp.zeros_like(memory), 
+            memory,
         )
-        new_rnn_state, y = nn.GRUCell(features=ins.shape[1])(rnn_state, ins)
-        return new_rnn_state, y
+
+        # 2. Project Memory (Read operation)
+        # Matches PyTorch: self.memory_proj = nn.Linear(d_model, d_model, bias=False)
+        mem_token = nn.Dense(self.config["D_MODEL"], use_bias=False)(memory)
+
+        # 3. Create Sequence: [Batch, 2, D_Model] -> [Memory, Observation]
+        # We stack on axis 1 (Sequence Length dimension)
+        sequence = jnp.stack([mem_token, obs_emb], axis=1)
+
+        # 4. Transformer Blocks
+        for _ in range(self.config["N_LAYERS"]):
+            sequence = TransformerBlock(
+                d_model=self.config["D_MODEL"],
+                n_heads=self.config["N_HEADS"]
+            )(sequence)
+
+        # 5. Extract Output / Next Memory
+        # Matches PyTorch logic: out_t = tokens[1] (The processed observation token)
+        # This token serves as the input to Actor/Critic AND the memory for the next step.
+        new_memory = sequence[:, 1, :]
+        
+        return new_memory, new_memory
 
     @staticmethod
-    def initialize_carry(batch_size, hidden_size):
-        cell = nn.GRUCell(features=hidden_size)
-        return cell.initialize_carry(jax.random.PRNGKey(0), (batch_size, hidden_size))
+    def initialize_carry(batch_size, d_model):
+        # Initialize memory as zeros
+        return jnp.zeros((batch_size, d_model))
 
 
-class ActorCriticRNN(nn.Module):
-    action_dim: Sequence[int]
-    config: Dict
+class ActorCriticRMT(nn.Module):
+    action_dim: int
+    config: dict
 
     @nn.compact
-    def __call__(self, hidden, x):
+    def __call__(self, memory, x):
         obs, dones = x
+        
+        # 1. Observation Encoder 
+        # Project inputs to D_MODEL size
         embedding = nn.Dense(
-            self.config["FC_DIM_SIZE"], kernel_init=orthogonal(np.sqrt(2)), bias_init=constant(0.0)
+            self.config["D_MODEL"], kernel_init=orthogonal(np.sqrt(2)), bias_init=constant(0.0)
         )(obs)
         embedding = nn.relu(embedding)
+    
 
-        rnn_in = (embedding, dones)
-        hidden, embedding = ScannedRNN()(hidden, rnn_in)
+        # 2. Recurrent Memory Transformer
+        # Scanned over time dimension
+        rmt_in = (embedding, dones)
+        new_memory, embedding_out = ScannedRMT(config=self.config)(memory, rmt_in)
 
-        actor_mean = nn.Dense(self.config["GRU_HIDDEN_DIM"], kernel_init=orthogonal(2), bias_init=constant(0.0))(
-            embedding
+        # 3. Actor Head
+        actor_mean = nn.Dense(self.config["D_MODEL"], kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            embedding_out
         )
         actor_mean = nn.relu(actor_mean)
         action_logits = nn.Dense(
@@ -87,13 +159,14 @@ class ActorCriticRNN(nn.Module):
 
         pi = distrax.Categorical(logits=action_logits)
 
-        critic = nn.Dense(self.config["FC_DIM_SIZE"], kernel_init=orthogonal(2), bias_init=constant(0.0))(
-            embedding
+        # 4. Critic Head
+        critic = nn.Dense(self.config["D_MODEL"], kernel_init=orthogonal(2), bias_init=constant(0.0))(
+            embedding_out
         )
         critic = nn.relu(critic)
         critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(critic)
 
-        return hidden, pi, jnp.squeeze(critic, axis=-1)
+        return new_memory, pi, jnp.squeeze(critic, axis=-1)
 
 # ===========================
 # Data Structures and Utilities
@@ -121,6 +194,7 @@ def unbatchify(x: jnp.ndarray, agent_list, num_envs, num_actors):
 # ===========================
 def make_train(config, env):
     config["LR"] = float(config["LR"])
+    config["TOTAL_TIMESTEPS"] = int(config["TOTAL_TIMESTEPS"])
     config["NUM_ACTORS"] = env.num_agents * config["NUM_ENVS"]
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
@@ -140,8 +214,9 @@ def make_train(config, env):
         return config["LR"] * frac
 
     def train(rng):
+        
         # INIT NETWORK
-        network = ActorCriticRNN(env.action_space(env.agents[0]).n, config=config)
+        network = ActorCriticRMT(env.action_space(env.agents[0]).n, config=config)
         rng, _rng = jax.random.split(rng)
         init_x = (
             jnp.zeros(
@@ -149,7 +224,7 @@ def make_train(config, env):
             ),
             jnp.zeros((1, config["NUM_ENVS"])),
         )
-        init_hstate = ScannedRNN.initialize_carry(config["NUM_ENVS"], config["GRU_HIDDEN_DIM"])
+        init_hstate = ScannedRMT.initialize_carry(config["NUM_ENVS"], config["D_MODEL"])
         network_params = network.init(_rng, init_hstate, init_x)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -171,7 +246,7 @@ def make_train(config, env):
         rng, _rng = jax.random.split(rng)
         reset_rng = jax.random.split(_rng, config["NUM_ENVS"])
         obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
-        init_hstate = ScannedRNN.initialize_carry(config["NUM_ACTORS"], config["GRU_HIDDEN_DIM"])
+        init_hstate = ScannedRMT.initialize_carry(config["NUM_ACTORS"], config["D_MODEL"])
 
         # TRAIN LOOP
         def _update_step(update_runner_state, unused):
@@ -470,13 +545,13 @@ def single_run(config):
     # =========================================================================
     print("Initializing model to count parameters...")
     # 1. Create a dummy network instance
-    dummy_network = ActorCriticRNN(env.action_space(env.agents[0]).n, config=config)
+    dummy_network = ActorCriticRMT(env.action_space(env.agents[0]).n, config=config)
     
     # 2. Create dummy inputs (Batch size 1 is enough for checking)
     dummy_rng = jax.random.PRNGKey(0)
     dummy_obs = jnp.zeros((1, 1, env.observation_space(env.agents[0]).shape[0])) # [1, Batch, Obs]
     dummy_dones = jnp.zeros((1, 1))                                              # [1, Batch]
-    dummy_memory = ScannedRNN.initialize_carry(1, config["GRU_HIDDEN_DIM"])             # [Batch, H_dim]
+    dummy_memory = ScannedRMT.initialize_carry(1, config["D_MODEL"])             # [Batch, D_Model]
     
     # 3. Initialize parameters
     dummy_params = dummy_network.init(dummy_rng, dummy_memory, (dummy_obs, dummy_dones))
@@ -487,6 +562,7 @@ def single_run(config):
     print(f" TOTAL TRAINABLE PARAMETERS: {total_params:,}")
     print(f"{'='*40}\n")
     # =========================================================================
+    
     rngs = jax.random.split(rng, config["NUM_SEEDS"])
     train_vjit = jax.jit(jax.vmap(make_train(config, env)))
     outs = jax.block_until_ready(train_vjit(rngs))
