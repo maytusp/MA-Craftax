@@ -10,8 +10,8 @@ ENV_NAME: "Craftax-Coop-Symbolic"
 # Model parameters
 ALG_NAME: "ippo-rmt"  # Updated algorithm name
 D_MODEL: 128          # The size of the memory token and embedding (Replaces GRU_HIDDEN_DIM)
-N_LAYERS: 2           # Number of Transformer blocks
-N_HEADS: 4            # Number of attention heads (Must divide D_MODEL evenly)
+N_LAYERS: 6           # Number of Transformer blocks
+N_HEADS: 32            # Number of attention heads (Must divide D_MODEL evenly)
 MLP_RATIO: 4          # Ratio of MLP hidden dim to D_MODEL (Standard is 4)
 ACTIVATION: "gelu"    # Transformers typically use GELU, replacing Tanh
 

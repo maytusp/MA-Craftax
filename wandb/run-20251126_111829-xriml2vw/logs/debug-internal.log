@@ -1,0 +1,11 @@
+{"time":"2025-11-26T11:18:30.162604645Z","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-11-26T11:18:30.417747486Z","level":"INFO","msg":"stream: created new stream","id":"xriml2vw"}
+{"time":"2025-11-26T11:18:30.417863626Z","level":"INFO","msg":"handler: started","stream_id":"xriml2vw"}
+{"time":"2025-11-26T11:18:30.418324013Z","level":"INFO","msg":"stream: started","id":"xriml2vw"}
+{"time":"2025-11-26T11:18:30.418509622Z","level":"INFO","msg":"writer: started","stream_id":"xriml2vw"}
+{"time":"2025-11-26T11:18:30.418578704Z","level":"INFO","msg":"sender: started","stream_id":"xriml2vw"}
+{"time":"2025-11-26T15:17:33.930248979Z","level":"INFO","msg":"stream: closing","id":"xriml2vw"}
+{"time":"2025-11-26T15:17:34.38878092Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-11-26T15:17:34.640451188Z","level":"INFO","msg":"handler: closed","stream_id":"xriml2vw"}
+{"time":"2025-11-26T15:17:34.640686137Z","level":"INFO","msg":"sender: closed","stream_id":"xriml2vw"}
+{"time":"2025-11-26T15:17:34.640697994Z","level":"INFO","msg":"stream: closed","id":"xriml2vw"}

@@ -1,4 +1,4 @@
-# python -m baselines.ippo_rmt --config_file ippo_rmt.yaml
+# CUDA_VISIBLE_DEVICES=0 python -m baselines.ippo_rmt --config_file ippo_rmt.yaml
 """
 Code is adapted from the IPPO RNN implementation of JaxMARL (https://github.com/FLAIROx/JaxMARL/tree/main) 
 Credit goes to the original authors: Rutherford et al.
@@ -525,18 +525,18 @@ def single_run(config):
     env_name = config.get("ENV_NAME", "Craftax-Coop-Symbolic")
     env = make_craftax_env_from_name(env_name)
 
-    wandb.init(
-        entity=config["ENTITY"],
-        project=config["PROJECT"],
-        tags=[
-            alg_name.upper(),
-            env_name.upper(),
-            f"jax_{jax.__version__}",
-        ],
-        name=config["RUN_NAME"],
-        config=config,
-        mode=config["WANDB_MODE"],
-    )
+    # wandb.init(
+    #     entity=config["ENTITY"],
+    #     project=config["PROJECT"],
+    #     tags=[
+    #         alg_name.upper(),
+    #         env_name.upper(),
+    #         f"jax_{jax.__version__}",
+    #     ],
+    #     name=config["RUN_NAME"],
+    #     config=config,
+    #     mode=config["WANDB_MODE"],
+    # )
 
     rng = jax.random.PRNGKey(config["SEED"])
 
@@ -550,6 +550,7 @@ def single_run(config):
     # 2. Create dummy inputs (Batch size 1 is enough for checking)
     dummy_rng = jax.random.PRNGKey(0)
     dummy_obs = jnp.zeros((1, 1, env.observation_space(env.agents[0]).shape[0])) # [1, Batch, Obs]
+    print(f"OBS SIZE {dummy_obs.shape}")
     dummy_dones = jnp.zeros((1, 1))                                              # [1, Batch]
     dummy_memory = ScannedRMT.initialize_carry(1, config["D_MODEL"])             # [Batch, D_Model]
     
@@ -562,7 +563,7 @@ def single_run(config):
     print(f" TOTAL TRAINABLE PARAMETERS: {total_params:,}")
     print(f"{'='*40}\n")
     # =========================================================================
-    
+
     rngs = jax.random.split(rng, config["NUM_SEEDS"])
     train_vjit = jax.jit(jax.vmap(make_train(config, env)))
     outs = jax.block_until_ready(train_vjit(rngs))

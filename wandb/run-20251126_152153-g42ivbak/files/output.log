@@ -1,0 +1,35 @@
+Initializing model to count parameters...
+OBS SIZE (1, 1, 8728)
+
+========================================
+ TOTAL TRAINABLE PARAMETERS: 1,966,774
+========================================
+Traceback (most recent call last):
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/site-packages/jax/_src/api.py", line 1175, in _get_axis_size
+    return shape[axis]
+IndexError: tuple index out of range
+
+The above exception was the direct cause of the following exception:
+
+jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/maytus/miniconda3/envs/robot/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 584, in <module>
+    main()
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 580, in main
+    single_run(config)
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 569, in single_run
+    outs = jax.block_until_ready(train_vjit(rngs))
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 513, in train
+    runner_state, metric = jax.lax.scan(
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 294, in _update_step
+    runner_state, traj_batch = jax.lax.scan(
+  File "/home/maytus/MA-Craftax-Ox/baselines/ippo_rmt.py", line 276, in _env_step
+    obsv, env_state, reward, done, info = jax.vmap(
+ValueError: vmap was requested to map its argument along axis 0, which implies that its rank should be at least 1, but is only 0 (its shape is ())
