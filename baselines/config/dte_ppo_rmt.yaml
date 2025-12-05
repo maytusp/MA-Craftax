@@ -2,13 +2,13 @@
 WANDB_MODE: "online" # "online" , "disabled"
 ENTITY: "maytusp"
 PROJECT: "Craftax-Coop-Symbolic"
-RUN_NAME: "IPPO - RMT"
+RUN_NAME: "DTE-PPO-RMT"
 
 # Environment configuration
 ENV_NAME: "Craftax-Coop-Symbolic" 
 
 # Model parameters
-ALG_NAME: "ippo-rmt"  # Updated algorithm name
+ALG_NAME: "dte-ppo-rmt"  # Updated algorithm name
 D_MODEL: 128          # The size of the memory token and embedding (Replaces GRU_HIDDEN_DIM)
 N_LAYERS: 6           # Number of Transformer blocks
 N_HEADS: 32            # Number of attention heads (Must divide D_MODEL evenly)
