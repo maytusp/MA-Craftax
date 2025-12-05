@@ -1,0 +1,38 @@
+# Weights & Biases configuration
+WANDB_MODE: "online" # "online" , "disabled"
+ENTITY: "maytusp"
+PROJECT: "Craftax-Coop-Symbolic"
+RUN_NAME: "IPPO - RMT"
+
+# Environment configuration
+ENV_NAME: "Craftax-Coop-Symbolic" 
+
+# Model parameters
+ALG_NAME: "ippo-rmt"  # Updated algorithm name
+D_MODEL: 128          # The size of the memory token and embedding (Replaces GRU_HIDDEN_DIM)
+N_LAYERS: 6           # Number of Transformer blocks
+N_HEADS: 32            # Number of attention heads (Must divide D_MODEL evenly)
+MLP_RATIO: 4          # Ratio of MLP hidden dim to D_MODEL (Standard is 4)
+ACTIVATION: "gelu"    # Transformers typically use GELU, replacing Tanh
+
+# Training parameters
+TOTAL_TIMESTEPS: 1_000_000_000
+NUM_ENVS: 1024        # RMT is computationally heavier than RNN; reduce if OOM occurs
+NUM_STEPS: 64
+NUM_MINIBATCHES: 8
+UPDATE_EPOCHS: 4
+GAE_LAMBDA: 0.8
+GAMMA: 0.99
+CLIP_EPS: 0.2
+SCALE_CLIP_EPS: false
+ENT_COEF: 0.01
+VF_COEF: 0.5
+ANNEAL_LR: true
+LR: 2e-4              # Transformer optimization can be sensitive; 2e-4 is a safe start
+MAX_GRAD_NORM: 1.0
+LR_WARMUP: 0.0
+REW_SHAPING_HORIZON: 1_000_000
+
+# Seed configuration
+NUM_SEEDS: 1
+SEED: 0
