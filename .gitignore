@@ -1,0 +1,4 @@
+logs/
+runs/
+checkpoints/
+wandb/
